@@ -1,8 +1,38 @@
 #From https://nbviewer.org/github/openmc-dev/openmc-notebooks/blob/main/cad-based-geometry.ipynb
 
 import urllib.request
+from IPython.display import Image
+import openmc
+from matplotlib import pyplot as plt
 
-fuel_pin_url = 'https://tinyurl.com/y3ugwz6w' # 1.2 MB
+
+        
+
+
+##################
+# DEFINE MATERIALS
+##################
+
+water = openmc.Material(name="water")
+water.add_nuclide('H1', 2.0, 'ao')
+water.add_nuclide('O16', 1.0, 'ao')
+water.set_density('g/cc', 1.0)
+water.add_s_alpha_beta('c_H_in_H2O')
+water.id = 41
+
+iron = openmc.Material(name="iron")
+iron.add_nuclide("Fe54", 0.0564555822608)
+iron.add_nuclide("Fe56", 0.919015287728)
+iron.add_nuclide("Fe57", 0.0216036861685)
+iron.add_nuclide("Fe58", 0.00292544384231)
+iron.set_density("g/cm3", 7.874)
+mats = openmc.Materials([iron, water])
+mats.export_to_xml()
+
+##################
+# DEFINE GEOMETRY
+##################
+
 teapot_url = 'https://tinyurl.com/y4mcmc3u' # 29 MB
 
 def download(url):
@@ -17,78 +47,16 @@ def download(url):
     # save file as dagmc.h5m
     with open("dagmc.h5m", 'wb') as f:
         f.write(u.read())
-        
-from IPython.display import Image
-import openmc
-
-
-
- # materials
-u235 = openmc.Material(name="fuel")
-u235.add_nuclide('U235', 1.0, 'ao')
-u235.set_density('g/cc', 11)
-u235.id = 40
-
-water = openmc.Material(name="water")
-water.add_nuclide('H1', 2.0, 'ao')
-water.add_nuclide('O16', 1.0, 'ao')
-water.set_density('g/cc', 1.0)
-water.add_s_alpha_beta('c_H_in_H2O')
-water.id = 41
-
-mats = openmc.Materials([u235, water])
-mats.export_to_xml()
-
-download(fuel_pin_url)
-dagmc_univ = openmc.DAGMCUniverse(filename="dagmc.h5m")
-geometry = openmc.Geometry(root=dagmc_univ)
-geometry.export_to_xml()
-settings = openmc.Settings()
-settings.batches = 10
-settings.inactive = 2
-settings.particles = 5000
-settings.export_to_xml()
-p = openmc.Plot()
-p.width = (25.0, 25.0)
-p.pixels = (400, 400)
-p.color_by = 'material'
-p.colors = {u235: 'yellow', water: 'blue'}
-openmc.plot_inline(p)
-settings.source = openmc.Source(space=openmc.stats.Box([-4., -4., -4.],
-                                                       [ 4.,  4.,  4.]))
-settings.export_to_xml()
-tally = openmc.Tally()
-tally.scores = ['total']
-tally.filters = [openmc.CellFilter(1)]
-tallies = openmc.Tallies([tally])
-tallies.export_to_xml()
-openmc.run()
-
-
-
-
 
 download(teapot_url)
 
-iron = openmc.Material(name="iron")
-iron.add_nuclide("Fe54", 0.0564555822608)
-iron.add_nuclide("Fe56", 0.919015287728)
-iron.add_nuclide("Fe57", 0.0216036861685)
-iron.add_nuclide("Fe58", 0.00292544384231)
-iron.set_density("g/cm3", 7.874)
-mats = openmc.Materials([iron, water])
-mats.export_to_xml()
+dagmc_univ = openmc.DAGMCUniverse(filename="dagmc.h5m")
+geometry = openmc.Geometry(root=dagmc_univ)
+geometry.export_to_xml()
 
-p = openmc.Plot()
-p.basis = 'xz'
-p.origin = (0.0, 0.0, 0.0)
-p.width = (30.0, 20.0)
-p.pixels = (450, 300)
-p.color_by = 'material'
-p.colors = {iron: 'gray', water: 'blue'}
-openmc.plot_inline(p)
-
-
+##################
+# DEFINE SETTINGS
+##################
 
 settings = openmc.Settings()
 settings.batches = 10
@@ -146,6 +114,11 @@ openmc.run()
 
 
 
+##################
+# PLOTTING
+##################
+
+
 sp = openmc.StatePoint("statepoint.10.h5")
 
 water_tally = sp.get_tally(scores=['flux'], id=water_tally.id)
@@ -161,21 +134,30 @@ pot_flux = pot_flux[::-1, :]
 del sp
 
 
+p = openmc.Plot()
+p.basis = 'xz'
+p.origin = (0.0, 0.0, 0.0)
+p.width = (30.0, 20.0)
+p.pixels = (450, 300)
+p.color_by = 'material'
+p.colors = {iron: 'gray', water: 'blue'}
+openmc.plot_inline(p)
 
-from matplotlib import pyplot as plt
+plt.savefig('Plot_1.png')
+plt.clf()
+
 fig = plt.figure(figsize=(18, 16))
 
 sub_plot1 = plt.subplot(121, title="Kettle Flux")
 sub_plot1.imshow(pot_flux)
 
-plt.savefig('Plot_1.png')
 
 
 sub_plot2 = plt.subplot(122, title="Water Flux")
 sub_plot2.imshow(water_flux)
 
-plt.savefig('Plot_2.png')
-
+plt.savefig('Flux.png')
+plt.clf()
 
 
 
