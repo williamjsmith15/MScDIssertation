@@ -1,3 +1,4 @@
+# From https://nbviewer.org/github/openmc-dev/openmc-notebooks/blob/main/pincell.ipynb
 # An OpenMC python script that runs a toy problem example 
 
 
