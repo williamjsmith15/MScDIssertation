@@ -15,4 +15,12 @@ inputs:
 outputs:
   example_out:
     type: stdout
+  tallies_out:
+    type: File
+    outputBinding:
+      glob: tallies.out
+  plot_out:
+    type: File
+    outputBinding:
+      glob: pinplot.png
 stdout: output.txt
