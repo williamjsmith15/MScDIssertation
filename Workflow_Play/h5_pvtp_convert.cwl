@@ -6,7 +6,7 @@ class: CommandLineTool
 baseCommand: openmc-track-to-vtk
 hints:
   DockerRequirement:
-    dockerPull: williamjsmith15/openmc-omniverse:openmc-vtk
+    dockerPull: williamjsmith15/openmc-omniverse:openmc-vtk-no_root
 inputs:
   tracks_in:
     type: File

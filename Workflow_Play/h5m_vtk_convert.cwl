@@ -6,7 +6,7 @@ class: CommandLineTool
 baseCommand: mbconvert
 hints:
   DockerRequirement:
-    dockerPull: openmc/openmc:develop-dagmc-libmesh
+    dockerPull: williamjsmith15/openmc-omniverse:openmc-vtk-no_root
 inputs:
   CAD_in:
     type: File
