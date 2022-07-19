@@ -8,12 +8,12 @@ hints:
   DockerRequirement:
     dockerPull: openmc/openmc:develop-dagmc-libmesh
 inputs:
-  tracks_in:
+  CAD_in:
     type: File
     inputBinding:
       position: 1
 outputs:
-  tracks_out:
+  CAD_out:
     type: File
     outputBinding:
-      glob: tracks.pvtp
+      glob: dagmc.vtk
