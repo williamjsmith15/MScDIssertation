@@ -23,4 +23,8 @@ outputs:
     type: File
     outputBinding:
       glob: tracks.h5
+  CAD_out:
+    type: File
+    outputBinding:
+      glob: dagmc.h5m
 stdout: output.txt
