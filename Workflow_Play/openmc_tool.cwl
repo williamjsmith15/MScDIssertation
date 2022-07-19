@@ -19,8 +19,8 @@ outputs:
     type: File
     outputBinding:
       glob: tallies.out
-  plot_out:
+  tracks_out:
     type: File
     outputBinding:
-      glob: pinplot.png
+      glob: tracks.h5
 stdout: output.txt

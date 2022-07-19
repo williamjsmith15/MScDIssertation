@@ -110,7 +110,7 @@ water_tally.scores = ['flux']
 tallies = openmc.Tallies([pot_tally, water_tally])
 tallies.export_to_xml()
 
-openmc.run()
+openmc.run(tracks=True) # Run in tracking mode for visualisation of tracks through CAD
 
 
 

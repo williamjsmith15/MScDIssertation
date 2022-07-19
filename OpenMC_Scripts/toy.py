@@ -118,7 +118,7 @@ tallies.export_to_xml()
 # RUN
 ####################
 
-openmc.run()
+openmc.run(tracks=True) # Run in tracking mode for visualisation of tracks through CAD
 
 
 # Plot geometries
