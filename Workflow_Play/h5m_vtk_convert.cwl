@@ -12,6 +12,10 @@ inputs:
     type: File
     inputBinding:
       position: 1
+  str:
+    type: string
+    inputBinding:
+      position: 50
 outputs:
   CAD_out:
     type: File

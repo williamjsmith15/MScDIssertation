@@ -6,14 +6,18 @@ class: CommandLineTool
 baseCommand: openmc-track-to-vtk
 hints:
   DockerRequirement:
-    dockerPull: openmc/openmc:develop-dagmc-libmesh
+    dockerPull: williamjsmith15/openmc-omniverse:openmc-vtk
 inputs:
   tracks_in:
     type: File
     inputBinding:
       position: 1
 outputs:
-  tracks_out:
+  tracks_out_loc:
     type: File
     outputBinding:
       glob: tracks.pvtp
+  tracks_out_data:
+    type: File
+    outputBinding:
+      glob: tracks_0.vtp
