@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  openMC:
+    build:
+      context: .
+      dockerfile: openMC/Dockerfile
+    environment:    
+      PYTHONPATH: /usr/local/USD/lib/python
+    tty: true
+    stdin_open: true
