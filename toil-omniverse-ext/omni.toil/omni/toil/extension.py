@@ -15,24 +15,6 @@ import docker
 
 sep = os.sep
 
-################################################################################
-## Import extension dependancies
-
-
-# def resolveDeps():
-#     print("[omni.hello.world] Resolving dependancies") 
-  
-#     deps = ["docker", "wheel", "pypiwin32", "pywin32[win32]"]
-#     for dep in deps:
-#         success = omni.kit.pipapi.install(dep, 
-#                                           use_online_index=True, 
-#                                           extra_args=["--upgrade"])
-#         print("[omni.hello.world] Installed: " + dep + " with result : "  + str(success))
-        
-#     print("[omni.hello.world] Finished resolving dependancies")
-
-#resolveDeps()
-
 
 ################################################################################
 ## Set paths and create tmp folders
@@ -46,20 +28,13 @@ paths = {
     "extension"         : extension,
     "kit"               : kit,
     "share"             : f"{tmp}{sep}share",
-    "usdTmp"            : f"{tmp}{sep}usd",
-    "usdDestination"    : "/usdToG4",
     "cwlSource"         : f"{extension}{sep}toil-omniverse-tooldescriptors",
     "cwlDestination"    : "/omniverse",
-    "geant4Macro"       : f"{extension}{sep}examples{sep}macros",
-    "geant4Tmp"         : f"{tmp}{sep}geant4",
-    "geant4Destination" : "/geant4",
-    "geant4OutputTmp"   : f"{tmp}{sep}geant4_out",
+    "outputTmp"         : f"{tmp}{sep}out",
 }
 
 pathlib.Path(paths["share"]).mkdir(parents=True, exist_ok=True)
-pathlib.Path(paths["usdTmp"]).mkdir(parents=True, exist_ok=True)
-pathlib.Path(paths["geant4Tmp"]).mkdir(parents=True, exist_ok=True)
-pathlib.Path(paths["geant4OutputTmp"]).mkdir(parents=True, exist_ok=True)
+pathlib.Path(paths["outputTmp"]).mkdir(parents=True, exist_ok=True)
 
 ################################################################################
 ## Helper functions
@@ -90,8 +65,6 @@ def toil_on_click(outputText, macroText):
     client = docker.from_env()
     toilContainer = client.containers.get("uom-omniverse-docker-toil-1")
 
-    var = toilContainer.exec_run(["find", "/geant4/", "-mindepth", "1", "-delete"])
-
     # --------------------------------------------------
     # Copy CWL files to toil container
 
@@ -102,36 +75,13 @@ def toil_on_click(outputText, macroText):
                )
 
     # --------------------------------------------------
-    # Copy USD file to toil container
-
-    stage = omni.usd.get_context().get_stage()
-    stage.Export(f'{paths["usdTmp"]}/export.usd')
-
-    send_files(toilContainer,                      # container
-               f'{paths["usdTmp"]}/',              # source directory 
-               f'{paths["share"]}/usdbundle.tar',  # temp directory
-               paths["cwlDestination"]             # container location
-               )
-
-    # --------------------------------------------------
-    # Copy Geant4 macro to toil container
-
-    with open(f'{paths["geant4Tmp"]}/run.mac', "w") as macroFile:
-        macroFile.write(macroText)
-
-    send_files(toilContainer,                        # container
-               f'{paths["geant4Tmp"]}/',             # source directory 
-               f'{paths["share"]}/macroBundle.tar',  # temp directory
-               paths["geant4Destination"]            # container location
-               )
-
-    # --------------------------------------------------
     # Run toil
 
-    var = toilContainer.exec_run(["toil-cwl-runner",
+    var = toilContainer.exec_run(["cwltool",
                                   "--disableProgress",
-                                  "/omniverse/omniverse-geant4.cwl",
-                                  "/omniverse/usdToG4-job.yml"
+                                  "--no-match-user",
+                                  "/omniverse/test_workflow.cwl",
+                                  "/omniverse/script_loc.yml"
                                   ])
     print(var)
     outputText.set_value(str(var.output.decode("utf-8")))
@@ -139,18 +89,22 @@ def toil_on_click(outputText, macroText):
     # --------------------------------------------------
     # Get output file
 
-    archive_path = f'{paths["geant4OutputTmp"]}/'
+    archive_path = f'{paths["outputTmp"]}/'
     bitstream, stat = toilContainer.get_archive("/geant4/",)
     filelike = io.BytesIO(b"".join(b for b in bitstream))
     tar = tarfile.open(fileobj=filelike)
     tar.extractall(path=archive_path)
 
-    target_files = [f'{paths["geant4OutputTmp"]}/geant4/g4.obj']
-    asyncio.ensure_future(
-        convert_asset_to_usd(target_files)
-    )
+    target_files = [f'{paths["outputTmp"]}/dagmc.h5m',
+                    f'{paths["outputTmp"]}/tallies.out',
+                    f'{paths["outputTmp"]}/tracks_0.vtp'
+                    f'{paths["outputTmp"]}/tracks.pvtp'
+                    ]
+    # asyncio.ensure_future(
+    #     convert_asset_to_usd(target_files)
+    # )
     
-    omni.usd.get_context().open_stage(f'{paths["geant4OutputTmp"]}/geant4/g4.usd')
+    # omni.usd.get_context().open_stage(f'{paths["outputTmp"]}/geant4/g4.usd')
 
     print(str(var.output.decode("utf-8")))
     return
@@ -208,7 +162,7 @@ async def convert_asset_to_usd(target_files):
 
             
 def check_ver(outputText):
-    omni.usd.get_context().open_stage(f'{paths["geant4OutputTmp"]}/geant4/g4.usd')
+    omni.usd.get_context().open_stage(f'{paths["outputTmp"]}/geant4/g4.usd')
 
     
     #asyncio.run(main(target_files))
