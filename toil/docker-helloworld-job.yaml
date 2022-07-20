@@ -1,0 +1,1 @@
+switches: "-cimport pyg4ometry;print('hello world')"
