@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  usd2g4:
+    build:
+      context: .
+      dockerfile: usd2g4/Dockerfile
+    environment:    
+      PYTHONPATH: /usr/local/USD/lib/python
+    tty: true
+    stdin_open: true
+  geant4:
+    build:
+      context: .
+      dockerfile: geant4/Dockerfile

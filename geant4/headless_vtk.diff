@@ -1,0 +1,12 @@
+diff -uraBN ../geant4-11.0.0/source/visualization/Vtk/src/G4VtkViewer.cc ../geant4-11.0.0-base/source/visualization/Vtk/src/G4VtkViewer.cc
+--- ../geant4-11.0.0/source/visualization/Vtk/src/G4VtkViewer.cc	2022-02-01 16:25:54.393183690 +0000
++++ ../geant4-11.0.0/source/visualization/Vtk/src/G4VtkViewer.cc	2022-02-01 16:33:21.166494892 +0000
+@@ -310,7 +310,7 @@
+ 
+   _renderWindow->Render();
+   renderWindowInteractor->Initialize();
+-  renderWindowInteractor->Start();
++  //renderWindowInteractor->Start();
+ }
+ 
+ void G4VtkViewer::FinishView()

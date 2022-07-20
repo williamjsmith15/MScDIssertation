@@ -1,0 +1,22 @@
+/vis/open VTKN
+/run/initialize
+
+/vis/viewer/set/autoRefresh false
+/vis/drawVolume
+
+/vis/scene/add/trajectories 
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/vis/scene/add/hits
+/vis/scene/endOfEventAction accumulate
+/vis/viewer/set/autoRefresh true
+
+/gun/particle proton
+/gun/position 0 1000 0 
+/gun/energy 1000 MeV
+
+/vis/viewer/flush
+
+/run/beamOn 10
+/vis/vtk/export obj g4

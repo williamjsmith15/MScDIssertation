@@ -1,0 +1,4 @@
+cython
+pybind11
+ipython
+distro

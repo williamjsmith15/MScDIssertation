@@ -1,0 +1,37 @@
+[package]
+# Semantic Versionning is used: https://semver.org/
+version = "1.0.0"
+
+# The title and description fields are primarily for displaying extension info in UI
+title = "Toil"
+description="Demonstration of workflow engine functionality in the Omniverse."
+
+# Path (relative to the root) or content of readme markdown file for UI.
+readme  = "docs/README.md"
+
+# URL of the extension source repository.
+repository = ""
+
+# One of categories for UI.
+category = "Example"
+
+# Keywords for the extension
+keywords = ["toil", "workflow"]
+ 
+# Use omni.ui to build simple UI
+[dependencies]
+"omni.kit.uiapp" = {}
+"omni.kit.asset_converter" = {}
+
+# Main python module this extension provides, it will be publicly available as "import omni.toil".
+[[python.module]]
+name = "omni.toil"
+
+[python.pipapi]
+requirements = [
+    "pypiwin32",
+    "win32api",
+    "wheel",
+    "docker"
+]
+use_online_index = true
